@@ -1,6 +1,5 @@
 from random import randint, choice
 from json import load
-from sys import exit
 from time import sleep
 import bot_plays
 
