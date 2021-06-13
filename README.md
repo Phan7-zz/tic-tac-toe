@@ -1,4 +1,4 @@
-# tic-tac-toe
+# Tic Tac Toe
 A Python tic tac toe game
 
 First, you have to select the game level, today, it has just two levels, but I'm working on a third level, that gonna be very hard
