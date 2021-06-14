@@ -9,7 +9,6 @@ groups = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [7, 4, 1], [8, 5, 2], [9, 6, 3], [7, 
 
 with open('phrases.json', 'r') as file:
     # Loading some phrases that the bot will print during the game
-
     phrases = load(file)
 
 def verify_win():
