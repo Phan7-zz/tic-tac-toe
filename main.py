@@ -63,7 +63,7 @@ def game_level():
         continue_game(1, int(chosen_mode))
     else:
         print("I'm X and you're O\nI was the one drawn, so I'll start, let me think...")
-        sleep(2)
+        sleep(1)
         continue_game(2, int(chosen_mode))
 
 def continue_game(turn, level):
@@ -111,7 +111,7 @@ def continue_game(turn, level):
             sleep(1)
             bot_turn(level)
             
-    def bot_turn(level, starts=False):
+    def bot_turn(level):
         # level -> The bot's level of difficulty
         # starts -> The bot will start the game
         global board
@@ -144,7 +144,7 @@ def continue_game(turn, level):
         player_turn()
     
     else:
-        bot_turn(level, True)
+        bot_turn(level)
 
 while True:
     board = {1: ' ', 2: ' ', 3: ' ', 4: ' ', 5: ' ', 6: ' ', 7: ' ', 8: ' ', 9: ' '}
