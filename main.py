@@ -83,7 +83,7 @@ def continue_game(turn, level):
             if board[int(move)] == ' ':
                 board[int(move)] = 'O'
             else:
-                player_turn(True)
+                player_turn()
         except KeyError or TypeError:
             print('Type a valid move!!')
             player_turn()
