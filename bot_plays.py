@@ -1,55 +1,64 @@
-from random import choice, randint
+from random import choice
 
 groups = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [7, 4, 1], [8, 5, 2], [9, 6, 3], [7, 5, 3], [9, 5, 1]]
 corners = [1, 3, 7, 9]
-middles = [2, 4, 6, 8]
 r_corners = [9, 7, 3, 1]
+middles = [2, 4, 6, 8]
 plays = 1
 bot_last_move = 0
 strategy = 0
+
 # groups -> Possible marks to win
-# Level_1 -> The bot will make totally random moves
-# Level_2 -> The bot will randomly choose between making a smart move or not
-# Level_3 -> The bot will always make a smart move
+
+# This variables above will be used just in the level 3 bot
+# ↳ corners -> The board corners
+# ↳ r_corners -> The corners, but reversed
+# ↳ middles -> The middles of the board
+# ↳ plays -> The number of times that the bot played
+# ↳ bot_last_move -> The last move that the bot did
+# ↳ strategy -> The strategy that the bot will use, actualy, this will only be usend on the level 3 bot
+
+# This functions bellow will always return the board given, but with the modification of the bot's move
 
 def bot_turn_1(board: dict):
     # Level 1 of difficulty
-    possible_movements = []
-
-    for movement in board.items():
-        if movement[1] == ' ':
-            possible_movements.append(movement[0])
-    move = choice(possible_movements)
+    # This level will make totally random moves everytime
+    options = []
+    
+    # For every house in the board, if it's empty, append it on options
+    for option in board.items():
+        if option[1] == ' ':
+            options.append(option[0])
+    move = choice(options)
 
     board[move] = 'X'
     return board
 
 def bot_turn_2(board: dict):
     # Level 2 of difficulty
-    smart = randint(1, 2) # 1 means smart move, 2 means not smart move
+    # This level will draw if make a random play or a kinda smart play
+    smart = choice(1, 2) # 1 means smart move, 2 means not smart move
 
     if smart == 1:
         # Check if someone is near to a win
         for possibility in groups:
             group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
             if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
-                where = group.index(' ') # Finding where to move to win
-                board[possibility[where]] = 'X'
+                move = group.index(' ') # Finding where to move to win
+                board[possibility[move]] = 'X'
                 return board
         
         # If arrived here, it means that the bot isn't near to a win, so the bot is going to check if the player is near to a win
         for possibility in groups:
             group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
             if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
-                where = group.index(' ') # Finding where to block the player
-                board[possibility[where]] = 'X'
+                move = group.index(' ') # Finding where to block the player
+                board[possibility[move]] = 'X'
                 return board
 
-        # If arrived here, it means that anyone is near to a win, so the bot does a random play
-        board = bot_turn_1(board)
-        return board
-    else:
-        return bot_turn_1(board)
+    # If arrived here, it means that anyone is near to a win or that the draw resulted in 2 so the bot does a random play
+    board = bot_turn_1(board)
+    return board
 
 def bot_turn_3(board: dict, last_move: int):
     global plays, groups, bot_last_move, corners, r_corners, strategy
