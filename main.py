@@ -9,6 +9,7 @@ groups = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [7, 4, 1], [8, 5, 2], [9, 6, 3], [7, 
 
 with open('phrases.json', 'r') as file:
     # Loading some phrases that the bot will print during the game
+
     phrases = load(file)
 
 def verify_win():
@@ -47,9 +48,9 @@ def board_status():
 def game_level():
     # This function will print the game difficulty levels and get the player's choice
 
-    chosen_mode = input("[1] Easy\n[2] Medium\n")
+    chosen_mode = input("[1] Easy\n[2] Medium\n[3] This level is like impossible, bro, don't pick this one\n")
 
-    if chosen_mode not in ('1', '2'):
+    if chosen_mode not in ('1', '2', '3'):
         print('Choose a valid game mode!')
         return game_level()
 
@@ -109,9 +110,9 @@ def continue_game(turn, level):
             sleep(1)
             print(choice(phrases['loosing']))
             sleep(1)
-            bot_turn(level)
+            bot_turn(level, move)
             
-    def bot_turn(level):
+    def bot_turn(level: int, last_move: int):
         # level -> The bot's level of difficulty
         # starts -> The bot will start the game
         global board
@@ -120,6 +121,8 @@ def continue_game(turn, level):
             board = bot_plays.bot_turn_1(board)
         elif level == 2:
             board = bot_plays.bot_turn_2(board)
+        else:
+            board = bot_plays.bot_turn_3(board, int(last_move))
 
         board_status()
 
@@ -144,7 +147,7 @@ def continue_game(turn, level):
         player_turn()
     
     else:
-        bot_turn(level)
+        bot_turn(level, 0)
 
 while True:
     board = {1: ' ', 2: ' ', 3: ' ', 4: ' ', 5: ' ', 6: ' ', 7: ' ', 8: ' ', 9: ' '}
@@ -153,3 +156,4 @@ while True:
     game_level()
     print(f'The score is: {score[0]} / {score[1]}')
     input('If you whanto to play again, press Enter\n')
+    bot_plays.reset()
