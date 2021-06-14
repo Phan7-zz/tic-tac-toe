@@ -79,14 +79,17 @@ def continue_game(turn, level):
         move = input()
 
         # Verifying if the inputted value is valid, if yes, modifying the board
-        try:
+        if move.isnumeric():
             if board[int(move)] == ' ':
                 board[int(move)] = 'O'
             else:
-                player_turn()
-        except KeyError or TypeError:
+                print('Type a valid move!!')
+                board_status()
+                return player_turn()
+        else:
             print('Type a valid move!!')
-            player_turn()
+            board_status()
+            return player_turn()
         
         board_status()
 
