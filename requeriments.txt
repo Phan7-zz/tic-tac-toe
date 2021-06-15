@@ -1,0 +1,1 @@
+You will need just "choice" from the library "random", that already comes with python, so you don't have to install
