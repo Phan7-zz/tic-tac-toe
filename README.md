@@ -3,7 +3,7 @@ A Python tic tac toe game
 
 First, you have to select the game level. Today, it has three levels
 
-In all the tests I've done at bot level three, the results have always been either draws or wins for the bot. Yes, if my tests are correct, the bot will never lose at level three...
+In all the tests I've done at bot level three, the results have always been either draws or wins for the bot. So, if my tests are correct, the bot will never lose at level three...
 
 To play, you have to look to your numeric keyboard (it's similar to the tic tac toe's game board), and type the number of the move that you want to do
 
