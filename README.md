@@ -1,7 +1,7 @@
 # Tic Tac Toe
 A Python tic tac toe game
 
-First, you have to select the game level. Today, it has trhee levels
+First, you have to select the game level. Today, it has three levels
 
 To play, you have to look to your numeric keyboard (it's similar to the tic tac toe's game board), and type the number of the move that you want to do
 
