@@ -1,3 +1,5 @@
-You will need "choice" from the library "random", that already comes with python, so you don't have to install
-You will need "sleep" from the library "time", that already comes with python, so you don't have to install
-You will need "load" from the library "json", that already comes with python, so you don't have to install
+from random import choice
+from json import load
+from time import sleep
+
+All of these libraries above already comes with Python, so you don't need to install them separately
