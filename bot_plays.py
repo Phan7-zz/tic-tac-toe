@@ -107,29 +107,29 @@ def bot_turn_3(board: dict, last_move: int):
                 return board
 
         elif plays == 3: # If this is the third bot's move
-            # First, the bot will check if someone is near to a win
+            # Check if someone is near to a win
             for possibility in groups:
                 group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
                 if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
                     move = group.index(' ') # Finding where to move to win
-                    plays += 1
-                    bot_last_move = move
                     board[possibility[move]] = 'X'
                     return board
-                elif group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
+            
+            # If arrived here, it means that the bot isn't near to a win, so the bot is going to check if the player is near to a win
+            for possibility in groups:
+                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
+                if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
                     move = group.index(' ') # Finding where to block the player
                     board[possibility[move]] = 'X'
-                    plays += 1
-                    bot_last_move = move
                     return board
             
             # If arrived here, so nobody is near to a win
             # The bot will move to the opposite side of the player's play
-            for b in choice([[0, 1], [1, 0]]):
-                if board[opposites[last_move][b]] == ' ':
-                    board[opposites[last_move][b]] = 'X'
+            for a in choice([[0, 1], [1, 0]]):
+                if board[opposites[last_move][a]] == ' ':
+                    board[opposites[last_move][a]] = 'X'
                     plays += 1
-                    bot_last_move = opposites[last_move][b]
+                    bot_last_move = opposites[last_move][a]
                     return board
         
         else: # If arrived here, it means that the game will end in a draw
@@ -138,22 +138,123 @@ def bot_turn_3(board: dict, last_move: int):
                 group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
                 if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
                     move = group.index(' ') # Finding where to move to win
-                    plays += 1
-                    bot_last_move = move
                     board[possibility[move]] = 'X'
                     return board
-                elif group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
+            
+            # If arrived here, it means that the bot isn't near to a win, so the bot is going to check if the player is near to a win
+            for possibility in groups:
+                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
+                if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
                     move = group.index(' ') # Finding where to block the player
                     board[possibility[move]] = 'X'
-                    plays += 1
-                    bot_last_move = move
                     return board
 
-        # If arrived here, the bot will meka a random play, because the game will end in a draw
+        # If arrived here, the bot will make a random play, because the game will end in a draw
         return bot_turn_1(board)
 
     elif strategy == 2: # The bot is starting, and the strategy is start from the corners
+        if plays == 1: # The first move will be any of the corners
+            move = choice(corners)
+            board[move] = 'X'
+            plays += 1
+            bot_last_move = move
+            return board
+        
+        elif plays == 2: # The seconde move is kinda complicated
+            # First, find the lines of the bot_last_move
+            bot_lines = []
+            for line in groups:
+                if bot_last_move in line and line not in ([7, 5, 3], [9, 5, 1]):
+                    bot_lines.append(line)
+
+            if last_move in middles: # If the player moved in a middle, the bot won
+                opposites_options = opposites[last_move]
+                for option in opposites_options:
+                    if option in bot_lines[0] or option in bot_lines[1]:
+                        if board[option] == ' ':
+                            move = option
+                            board[move] = 'X'
+                            plays += 1
+                            bot_last_move = move
+                            return board
+            
+            elif last_move in corners: # If the player moved in a corner, the bot will try to move to the opposite side
+                opposite_player_move = r_corners[corners.index(last_move)]
+                if board[opposite_player_move] == ' ':
+                    move = opposite_player_move
+                    board[move] = 'X'
+                    plays += 1
+                    bot_last_move = move
+                    return board
+                
+                # If we can't move to an opposite side, we will go to some of the other corners last
+                else:
+                    if last_move in (1, 9):
+                        move = choice([3, 7])
+                        board[move] = 'X'
+                        plays += 1
+                        bot_last_move = move
+                        return board
+                    else:
+                        move = choice([1, 9])
+                        board[move] = 'X'
+                        plays += 1
+                        bot_last_move = move
+                        return board
+            
+            if last_move == 5: # If the player moved to the center, the bot have to go to the opposite side of his first move
+                opposite_bot_move = r_corners[corners.index(bot_last_move)]
+                move = opposite_bot_move
+                board[move] = 'X'
+                plays += 1
+                bot_last_move = move
+                return board
+
+        elif plays == 3:# If arrived here, probably, this game will end in a draw
+            # Check if someone is near to a win
+            for possibility in groups:
+                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
+                if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
+                    move = group.index(' ') # Finding where to move to win
+                    board[possibility[move]] = 'X'
+                    return board
+            
+            # If arrived here, it means that the bot isn't near to a win, so the bot is going to check if the player is near to a win
+            for possibility in groups:
+                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
+                if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
+                    move = group.index(' ') # Finding where to block the player
+                    board[possibility[move]] = 'X'
+                    return board
+
+            move = choice([a for a in corners if board[a] == ' '])
+            board[move] = 'X'
+            plays += 1
+            bot_last_move = move
+            return board
+
+        else:
+            # Check if someone is near to a win
+            for possibility in groups:
+                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
+                if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
+                    move = group.index(' ') # Finding where to move to win
+                    board[possibility[move]] = 'X'
+                    return board
+            
+            # If arrived here, it means that the bot isn't near to a win, so the bot is going to check if the player is near to a win
+            for possibility in groups:
+                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
+                if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
+                    move = group.index(' ') # Finding where to block the player
+                    board[possibility[move]] = 'X'
+                    return board
+        
+        return bot_turn_1(board)
+
+    elif strategy == 3: # The player is starting from the center
         if plays == 1:
+            # As the player moved to 5, we have to move to one of the corners
             move = choice(corners)
             board[move] = 'X'
             plays += 1
@@ -161,222 +262,7 @@ def bot_turn_3(board: dict, last_move: int):
             return board
         
         elif plays == 2:
-            if bot_last_move == 1:
-                if last_move in (2, 4, 6, 8):
-                    if last_move == 4:
-                        move = 3
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 8:
-                        move = 7
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 6:
-                        move = 3
-                        print(move)
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 2:
-                        move = 7
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                else:
-                    if last_move == 3:
-                        move = 7
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 7:
-                        move = 3
-                        print(move)
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 9:
-                        move = choice([7, 3])
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-
-            elif bot_last_move == 3:
-                if last_move in (2, 4, 6, 8):
-                    if last_move == 4:
-                        move = choice([1, 9])
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 8:
-                        move = choice([3, 7])
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 6:
-                        move = 1
-                        print(move)
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 2:
-                        move = 9
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                else:
-                    if last_move == 7:
-                        move = choice([1, 9])
-                        print(move)
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 9:
-                        move = 1
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 1:
-                        move = 9
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-            
-            elif bot_last_move == 7:
-                if last_move in (2, 4, 6, 8):
-                    if last_move == 4:
-                        move = 9
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 8:
-                        move = 1
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 6:
-                        move = choice[1, 9]
-                        print(move)
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 2:
-                        move = choice([1, 9])
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                else:
-                    if last_move == 3:
-                        move = choice([1, 9])
-                        print(move)
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 9:
-                        move = 1
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 1:
-                        move = 9
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-            
-            else:
-                if last_move in (2, 4, 6, 8):
-                    if last_move == 4:
-                        move = choice([3, 7])
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 8:
-                        move = 3
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 6:
-                        move = 7
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 2:
-                        move = choice([7, 3])
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                else:
-                    if last_move == 3:
-                        move = 7
-                        print(move)
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 7:
-                        move = 3
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-                    elif last_move == 1:
-                        move = choice([3, 7])
-                        board[move] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-
-            if bot_last_move == 1:
-                board[9] = 'X'
-                plays += 1
-                bot_last_move = 9
-                return board
-            
-            elif bot_last_move == 3:
-                board[7] = 'X'
-                plays += 1
-                bot_last_move = 7
-                return board
-            
-            elif bot_last_move == 7:
-                board[3] = 'X'
-                plays += 1
-                bot_last_move = 3
-                return board
-            
-            elif bot_last_move == 9:
-                board[1] = 'X'
-                plays += 1
-                bot_last_move = 1
-                return board
-
-        elif plays == 3:
+            # Checking if someone is near to a win
             for possibility in groups:
                 group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
                 if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
@@ -395,12 +281,17 @@ def bot_turn_3(board: dict, last_move: int):
                     bot_last_move = move
                     return board
             
-            board[5] = 'X'
-            bot_last_move = 5
-            plays += 1
-            return board
-        
+            if last_move in corners: # The player isn't near to a win
+                # If the player moved to the opposite corner of the first play of the bot
+                # The bot will move to a random empty corner
+                for move in [a for a in corners if board[a] == ' ' and r_corners[corners.index(bot_last_move)] != a]:
+                    board[move] = 'X'
+                    plays += 1
+                    bot_last_move = move
+                    return board
+
         else:
+            # If arrived here, it means that the game will probably end in a draw
             for possibility in groups:
                 group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
                 if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
@@ -421,110 +312,18 @@ def bot_turn_3(board: dict, last_move: int):
 
         return bot_turn_1(board)
 
-    elif strategy == 3: # The player is starting, and the strategy is start from the center
+    elif strategy == 4: # The player is starting from the corners
         if plays == 1:
-            if last_move == 5:
-                move = choice(corners)
-                board[move] = 'X'
-                plays += 1
-                bot_last_move = move
-                return board
-        
-        elif plays == 2:
-            for possibility in groups:
-                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
-                if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
-                    move = group.index(' ') # Finding where to move to win
-                    board[possibility[move]] = 'X'
-                    plays += 1
-                    bot_last_move = move
-                    return board
-            
-            for possibility in groups:
-                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
-                if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
-                    move = group.index(' ') # Finding where to block the player
-                    board[possibility[move]] = 'X'
-                    plays += 1
-                    bot_last_move = move
-                    return board
-            
-            if last_move in corners and board[5] == 'O':
-                if bot_last_move in (1, 9):
-                    if board[3] == ' ':
-                        board[3] = 'X'
-                        plays += 1
-                        bot_last_move = 7
-                        return board
-                    elif board[7] == ' ':
-                        board[7] = 'X'
-                        plays += 1
-                        bot_last_move = 7
-                        return board
-                
-                elif bot_last_move in (3, 7):
-                    if board[1] == ' ':
-                        print('a')
-                        board[1] = 'X'
-                        plays += 1
-                        bot_last_move = 1
-                        return board
-                    elif board[9] == ' ':
-                        print('b')
-                        board[9] = 'X'
-                        plays += 1
-                        bot_last_move = 9
-                        return board
-
-            elif last_move in middles  and board[5] == 'O':
-                for possibility in groups:
-                    group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
-                    if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
-                        move = group.index(' ') # Finding where to move to win
-                        board[possibility[move]] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-            
-                for possibility in groups:
-                    group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
-                    if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
-                        move = group.index(' ') # Finding where to block the player
-                        board[possibility[move]] = 'X'
-                        plays += 1
-                        bot_last_move = move
-                        return board
-
-        else:
-            for possibility in groups:
-                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
-                if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
-                    move = group.index(' ') # Finding where to move to win
-                    board[possibility[move]] = 'X'
-                    plays += 1
-                    bot_last_move = move
-                    return board
-            
-            for possibility in groups:
-                group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
-                if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
-                    move = group.index(' ') # Finding where to block the player
-                    board[possibility[move]] = 'X'
-                    plays += 1
-                    bot_last_move = move
-                    return board
-
-        return bot_turn_1(board)
-
-    elif strategy == 4: # The player is starting, and the strategy is start from the corners
-        if plays == 1:
+            # As the player started from the corners, the bot has to go to the mid
             board[5] = 'X'
             plays += 1
             bot_last_move = 5
             return board
         
         elif plays == 2:
-            if last_move in corners: 
+
+            if last_move in corners:
+                # First, check if the player is near to a win
                 for possibility in groups:
                     group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
                     if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
@@ -533,7 +332,9 @@ def bot_turn_3(board: dict, last_move: int):
                         plays += 1
                         bot_last_move = move
                         return board
-            
+
+                # If the player isn't near to a win, so he is making a trap
+                # Move to any of the middles will block his trap
                 move = choice(middles)
                 board[move] = 'X'
                 plays += 1
@@ -541,6 +342,7 @@ def bot_turn_3(board: dict, last_move: int):
                 return board
             
             else:
+                # If the player moved to a mid, so he is probably near to a win
                 for possibility in groups:
                     group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
                     if group.count('O') == 2 and group.count(' ') == 1: # Means that the player is near to a win
@@ -549,8 +351,11 @@ def bot_turn_3(board: dict, last_move: int):
                         plays += 1
                         bot_last_move = move
                         return board
-        
+                
+                # If the player isn't near to a win, the bot will make a random play in "return bot_turn_1(board)"
+
         else:
+            # If arrived here, the game will probably end in a draw
             for possibility in groups:
                 group = (board[possibility[0]], board[possibility[1]], board[possibility[2]])
                 if group.count('X') == 2 and group.count(' ') == 1: # Means that the bot is near to a win
@@ -572,6 +377,7 @@ def bot_turn_3(board: dict, last_move: int):
         return bot_turn_1(board)
 
 def reset():
+    # Everytime that the game restarts, this function will reset the variables that has been changed
     global plays, bot_last_move, strategy
     strategy = 0
     plays = 1
