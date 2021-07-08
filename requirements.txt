@@ -1,5 +1,3 @@
 from random import choice, randint
 from json import load
 from time import sleep
-
-All of these libraries above already comes with Python, so you don't need to install them separately
